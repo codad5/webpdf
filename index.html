@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            width:300px;
+            height:300px;
+        }
+    </style>
+    <script src="dist/index.js" type="module" defer></script>
+</head>
+<body>
+    <div class="toolbar">
+        <button type="button" id="add-page-btn">
+            Add Page
+        </button>
+        <button type="button" id="print-btn">
+            Print
+        </button>
+        <select title="width" id="screen_size">
+            <option value="480">
+                Mobiles
+            </option>
+            <option value="768">
+                Tablets/Ipads
+            </option>
+            <option value="1024">
+                laptops
+            </option>
+        </select>
+    </div>
+    <iframe title="main" id="main" height="70%">
+
+    </iframe>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# Ignore node_module
+node_module
+
+# ignore build file
+dist
+lib
+
