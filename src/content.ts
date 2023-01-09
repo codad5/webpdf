@@ -1,5 +1,5 @@
 import { DOMResponse, DResponsesTypes, MessageType, Messages, MessagesBody, PrintMessageBody, PrintPageRes } from "./types"
-
+let ToBeprintBody = ''
 const resolveRes = (type : MessageType, body ?: MessagesBody) : DResponsesTypes|null => {
     switch (type) {
         case 'ADD_PAGE':
@@ -8,25 +8,26 @@ const resolveRes = (type : MessageType, body ?: MessagesBody) : DResponsesTypes|
         case 'PRINT':
             return preparePrint(body ?? '')
         break;
+        case 'GET_PRINT_DATA':
+            console.clear()
+            console.log('getting print data')
+            return {
+                status: true,
+                body : ToBeprintBody
+            }
+        break;
         default:
             return null;
         break;
     }
 }
 const preparePrint = (body : PrintMessageBody) : PrintPageRes => {
-    const html = document.querySelector('html')
-    const fakeHTML = new DOMParser().parseFromString(body, 'text/html')
-    const MyIframe : HTMLIFrameElement|null  = fakeHTML.querySelector('iframe#main')
-    MyIframe?.contentWindow?.focus()
-    MyIframe?.contentWindow?.print()
-    console.log(MyIframe, fakeHTML);
-    // html?.replaceWith(MyIframe?.querySelector('html') ?? '')
-    // html?.focus()
-    // window.focus()
-    // window.print()
-    // window.location.reload()
+    console.log(body)
+    ToBeprintBody = body
+    const url = chrome.runtime.getURL("pages/print.html")
     return {
-        status: true
+        status: true,
+        url: url
     }
 }
 const readyHTML = () => {

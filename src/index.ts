@@ -70,13 +70,18 @@ PrintButton?.addEventListener('click', () => {
         }, tabs => {
             chrome.tabs.sendMessage(
                 tabs[0].id || 0,
-                {type: "PRINT", body:document?.querySelector("html")?.innerHTML} as Messages<PrintMessageBody>,
+                {type: "PRINT", body:MyIframe?.contentDocument?.querySelector('html')?.innerHTML} as Messages<PrintMessageBody>,
                 (res : DOMResponse<PrintPageRes>) => {
                     console.log(res);
-                    // if(res.response instanceof String){
-                    //     res.response = new DOMParser().parseFromString(res.response as string, 'text/html')
-                    // }
-                   res?.response.status ? alert("printed") : null
+                    if(res.response.status){
+                        chrome.tabs?.create(
+                            { url: res.response.url },
+                            (tab) => {
+                                
+                            }
+                        )
+                    }
+                   res?.response.status ? alert("printing") : null
                 }
             )
         })
