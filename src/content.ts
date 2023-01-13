@@ -5,31 +5,12 @@ const resolveRes = (type : MessageType, body ?: MessagesBody) : DResponsesTypes|
         case 'ADD_PAGE':
             return readyHTML()
         break;
-        case 'PRINT':
-            return preparePrint(body ?? '')
-        break;
-        case 'GET_PRINT_DATA':
-            console.clear()
-            console.log('getting print data')
-            return {
-                status: true,
-                body : ToBeprintBody
-            }
-        break;
         default:
             return null;
         break;
     }
 }
-const preparePrint = (body : PrintMessageBody) : PrintPageRes => {
-    console.log(body)
-    ToBeprintBody = body
-    const url = chrome.runtime.getURL("pages/print.html")
-    return {
-        status: true,
-        url: url
-    }
-}
+
 const readyHTML = () => {
     const body = document.querySelector('html')
     const body_clone = document?.cloneNode(true) as Element

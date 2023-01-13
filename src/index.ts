@@ -54,13 +54,6 @@ const saveContent = (tab_id : string|number, data : AddPageRes) => {
     localStorage.setItem(`tab_${tab_id}`, JSON.stringify(newData))
 }
 
-function sendDataToTab<MesageType, ResType>(tab : number, data : Messages<MesageType>, callback : (res : DOMResponse<ResType>) => void){
-    return chrome.tabs.sendMessage(
-                tab,
-                data,
-                (res : DOMResponse<ResType>) => callback(res)
-    )
-}
 
 screensizeButton?.addEventListener('change', () => {
     MyIframe?.setAttribute('width' , `${screensizeButton.value}px`)
@@ -70,31 +63,25 @@ screensizeButton?.addEventListener('change', () => {
     console.log('change')
 })
 
-PrintButton?.addEventListener('click', async () => {
-    print()
-    // chrome.tabs && chrome.tabs.query({
-    //         active:true,
-    //         currentWindow:true
-    //     }, tabs => {
-    //         chrome.tabs.sendMessage(
-    //             tabs[0].id || 0,
-    //             {type: "PRINT", body:MyIframe?.contentDocument?.querySelector('html')?.innerHTML} as Messages<PrintMessageBody>,
-    //             (res : DOMResponse<PrintPageRes>) => {
-    //                 console.log(res);
-    //                 if(res.response.status){
-                        const newTab = await chrome.tabs?.create({ url: res.response.url })
-                        chrome.tabs.sendMessage(
-                            newTab['id'],
-                            {type : "PRINT", body : MyIframe?.contentDocument?.querySelector('html')?.innerHTML} as Messages<PrintMessageBody>,
-                            (res : DOMResponse<PrintPageRes>) => {
-                                console.log(res)
-                                res?.response.status ? alert("printing") : null
-                            }
-                        )
-
-        //             }
-                //    res?.response.status ? alert("printing") : null
-        //         }
-        //     )
-        // })
+PrintButton?.addEventListener('click',  () => {
+    chrome.tabs && chrome.tabs.query({
+            active:true,
+            currentWindow:true
+        }, tabs => {
+        // store the tab id in localstorage
+        localStorage.setItem(`print_tab`, `${tabs[0].id || 0}`)
+        //store the width in localstorage
+        localStorage.setItem(`print_width`, `${screensizeButton?.value ?? 0}px`)
+        chrome.tabs?.create({ url: chrome.runtime.getURL("pages/print.html") } , (newTab) => {
+        console.log(newTab)
+        chrome.tabs.sendMessage(
+            newTab['id'] ?? 0,
+            {type : "PRINT", body : MyIframe?.contentDocument?.querySelector('html')?.innerHTML} as Messages<PrintMessageBody>,
+            (res : DOMResponse<PrintPageRes>) => {
+                console.log(res)
+                res?.response.status ? alert("printing") : null
+            }
+            )
+        })
+    })
 })
