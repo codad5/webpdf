@@ -1,5 +1,4 @@
 import { DOMResponse, DResponsesTypes, MessageType, Messages, MessagesBody, PrintMessageBody, PrintPageRes } from "./types"
-let ToBeprintBody = ''
 const resolveRes = (type : MessageType, body ?: MessagesBody) : DResponsesTypes|null => {
     switch (type) {
         case 'ADD_PAGE':
@@ -10,7 +9,6 @@ const resolveRes = (type : MessageType, body ?: MessagesBody) : DResponsesTypes|
         break;
     }
 }
-
 const readyHTML = () => {
     const body = document.querySelector('html')
     const body_clone = document?.cloneNode(true) as Element

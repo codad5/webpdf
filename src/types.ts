@@ -1,4 +1,4 @@
-export type MessageType = 'ADD_PAGE' | 'PRINT' | 'GET_PRINT_DATA'
+export type MessageType = 'ADD_PAGE' | 'PRINT'
 export type PrintMessageBody = string
 export type MessagesBody = PrintMessageBody
 export type Messages<T = MessagesBody> = {

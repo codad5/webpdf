@@ -5,19 +5,33 @@ const PrintButton : HTMLButtonElement|null = document.querySelector('button#prin
 const screensizeButton : HTMLSelectElement|null = document.querySelector('select#screen_size')
 const MyIframe : HTMLIFrameElement|null  = document.querySelector('iframe#main')
 
+
+const loadData = (data: AddPageRes) => {
+     MyIframe?.contentDocument?.body.insertAdjacentHTML('beforeend', data.body as string)
+     MyIframe?.contentDocument?.head.insertAdjacentHTML('beforeend', data.head as string)
+}
+
+const saveContent = (tab_id : string|number, data : AddPageRes) => {
+    const newData = {data:[...JSON.parse(localStorage.getItem(`tab_${tab_id}`) ?? '{}').data ?? [], data]}
+    console.log(newData)
+    localStorage.setItem(`tab_${tab_id}`, JSON.stringify(newData))
+}
+
+//  Event Listeners
 window.addEventListener('load', () => {
     chrome.tabs && chrome.tabs.query({
             active:true,
             currentWindow:true
         }, tabs => {
-            console.log(localStorage.getItem(`tab_${tabs[0].id || 0}`), `tab_${tabs[0].id || 0}`)
-            const data : AddPageRes[] = JSON.parse(localStorage.getItem(`tab_${tabs[0].id || 0}`) ?? '{}')?.data ?? []
-            data.forEach(pages => {
-                loadData(pages)
-            })
+        console.log(localStorage.getItem(`tab_${tabs[0].id || 0}`), `tab_${tabs[0].id || 0}`)
+        const data : AddPageRes[] = JSON.parse(localStorage.getItem(`tab_${tabs[0].id || 0}`) ?? '{}')?.data ?? []
+        data.forEach(pages => {
+            loadData(pages)
         })
+    })
 })
-// 314126364, 314126364, 314126364
+
+//  Event Listeners
 addPageButton?.addEventListener('click', () => {
     console.log('working 1')
     chrome.tabs && chrome.tabs.query({
@@ -29,10 +43,6 @@ addPageButton?.addEventListener('click', () => {
                 tabs[0].id || 0,
                 {type: "ADD_PAGE"} as Messages<undefined>,
                 (res : DOMResponse<AddPageRes>) => {
-                    console.log(res);
-                    // if(res.response instanceof String){
-                    //     res.response = new DOMParser().parseFromString(res.response as string, 'text/html')
-                    // }
                    loadData(res.response)
                    saveContent(tabs[0].id || 0, {
                     head:MyIframe?.contentDocument?.head.innerHTML ?? '',
@@ -43,18 +53,7 @@ addPageButton?.addEventListener('click', () => {
         }
     )
 })
-
-const loadData = (data: AddPageRes) => {
-     MyIframe?.contentDocument?.body.insertAdjacentHTML('beforeend', data.body as string)
-     MyIframe?.contentDocument?.head.insertAdjacentHTML('beforeend', data.head as string)
-}
-const saveContent = (tab_id : string|number, data : AddPageRes) => {
-    const newData = {data:[...JSON.parse(localStorage.getItem(`tab_${tab_id}`) ?? '{}').data ?? [], data]}
-    console.log(newData)
-    localStorage.setItem(`tab_${tab_id}`, JSON.stringify(newData))
-}
-
-
+// For media query
 screensizeButton?.addEventListener('change', () => {
     MyIframe?.setAttribute('width' , `${screensizeButton.value}px`)
     document.body.style.width = `${(+screensizeButton.value) + 20}px`
@@ -63,6 +62,13 @@ screensizeButton?.addEventListener('change', () => {
     console.log('change')
 })
 
+/**
+*  How the print works 
+*  for the selected tab once the print button is pressed the tab id is saved to local storage 
+*  Then a new tab is created with pages/print.html as the page
+*  The print page will then get all the pages data from the localstorage and the fix it into the iframe in the print page 
+*  Then the page will automatically start printing the iframe content in the seleced media query
+*/
 PrintButton?.addEventListener('click',  () => {
     chrome.tabs && chrome.tabs.query({
             active:true,
@@ -71,7 +77,7 @@ PrintButton?.addEventListener('click',  () => {
         // store the tab id in localstorage
         localStorage.setItem(`print_tab`, `${tabs[0].id || 0}`)
         //store the width in localstorage
-        localStorage.setItem(`print_width`, `${screensizeButton?.value ?? 0}px`)
+        localStorage.setItem(`print_width`, `${screensizeButton?.value ?? 480}px`)
         chrome.tabs?.create({ url: chrome.runtime.getURL("pages/print.html") } , (newTab) => {
         console.log(newTab)
         chrome.tabs.sendMessage(
