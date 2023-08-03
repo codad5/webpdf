@@ -1,4 +1,8 @@
-export type MessageType = 'ADD_PAGE' | 'PRINT'
+// export type MessageType = 'ADD_PAGE' | 'PRINT'
+export enum MessageType {
+    ADD_PAGE = "ADD_PAGE", 
+    PRINT = "PRINT"
+}
 export type PrintMessageBody = string
 export type MessagesBody = PrintMessageBody
 export type Messages<T = MessagesBody> = {

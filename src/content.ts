@@ -1,7 +1,7 @@
-import { DOMResponse, DResponsesTypes, MessageType, Messages, MessagesBody, PrintMessageBody, PrintPageRes } from "./types"
+import { DOMResponse, DResponsesTypes, MessageType, Messages, MessagesBody } from "./types"
 const resolveRes = (type : MessageType, body ?: MessagesBody) : DResponsesTypes|null => {
     switch (type) {
-        case 'ADD_PAGE':
+        case MessageType.ADD_PAGE:
             return readyHTML()
         break;
         default:
@@ -45,3 +45,7 @@ const messageFromListener = (msg : Messages, sender: chrome.runtime.MessageSende
     
 }
 chrome.runtime.onMessage.addListener(messageFromListener)
+
+/**
+ * #udemy > div.ud-main-content-wrapper > div.ud-main-content > div > div > div:nth-child(2) > div.heading > div.ud-container.lead-container > div:nth-child(2) > div > div > div > div > div.buy-button.buy-box--buy-box-item--2RETv.buy-box--buy-button--35r28 > div > button
+ */

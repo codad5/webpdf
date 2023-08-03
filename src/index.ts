@@ -1,4 +1,4 @@
-import { AddPageRes, DOMResponse, Messages, PrintMessageBody, PrintPageRes } from "./types";
+import { AddPageRes, DOMResponse, MessageType, Messages, PrintMessageBody, PrintPageRes } from "./types.js";
 
 const addPageButton : HTMLButtonElement|null = document.querySelector('button#add-page-btn')
 const PrintButton : HTMLButtonElement|null = document.querySelector('button#print-btn')
@@ -41,7 +41,7 @@ addPageButton?.addEventListener('click', () => {
             console.log(tabs[0].id)
             chrome.tabs.sendMessage(
                 tabs[0].id || 0,
-                {type: "ADD_PAGE"} as Messages<undefined>,
+                { type: MessageType.ADD_PAGE } ,
                 (res : DOMResponse<AddPageRes>) => {
                    loadData(res.response)
                    saveContent(tabs[0].id || 0, {
@@ -82,7 +82,10 @@ PrintButton?.addEventListener('click',  () => {
         console.log(newTab)
         chrome.tabs.sendMessage(
             newTab['id'] ?? 0,
-            {type : "PRINT", body : MyIframe?.contentDocument?.querySelector('html')?.innerHTML} as Messages<PrintMessageBody>,
+            {
+                type: MessageType.PRINT,
+                body: MyIframe?.contentDocument?.querySelector('html')?.innerHTML
+            } as Messages<PrintMessageBody>,
             (res : DOMResponse<PrintPageRes>) => {
                 console.log(res)
                 res?.response.status ? alert("printing") : null
